@@ -27,13 +27,13 @@ def process_image_endpoint():
         
         try:
             # Process the image and get results
-            elements_json = process_image_for_3d(file_path)
+            elements = process_image_for_3d(file_path)
             
-            # Return JSON response with the results and image path
-            return jsonify({
-                "result": json.loads(elements_json),  # Ensure the result is a JSON object
-                "processed_image_path": file_path
-            })
+            # Convert the elements list to JSON string while preserving order
+            json_output = json.dumps(elements, indent=4)
+            
+            # Return a Response object to avoid altering the JSON structure
+            return Response(json_output, mimetype='application/json')
         except Exception as e:
             return jsonify({"error": str(e)}), 500
         finally:
@@ -46,6 +46,9 @@ def process_image_endpoint():
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
 if __name__ == '__main__':
     print("Starting server...")
     port = os.getenv("PORT") 
